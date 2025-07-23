@@ -1,0 +1,43 @@
+# Prometheus全局配置
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# 规则文件
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# 抓取配置
+scrape_configs:
+  # Prometheus自身监控
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # HTML2MD服务监控
+  - job_name: 'html2md'
+    static_configs:
+      - targets: ['html2md:8080']
+    metrics_path: '/api/v1/metrics'  # 如果实现了metrics端点
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Nginx监控（如果启用了nginx_exporter）
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:9113']  # nginx-prometheus-exporter端口
+    scrape_interval: 30s
+
+  # 系统监控（如果启用了node_exporter）
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+# 告警配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093 

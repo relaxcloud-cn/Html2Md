@@ -1,0 +1,131 @@
+# Docker Compose 完整版配置文件
+# 包含: HTML2MD服务 + Nginx + Redis + Prometheus监控
+
+services:
+  # HTML转Markdown服务
+  html2md:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: html2md-service
+    restart: unless-stopped
+    environment:
+      # 服务配置
+      - HTTP_PORT=8080
+      - GRPC_PORT=9090
+      - ENVIRONMENT=production
+      - SERVICE_NAME=html2md
+      - SERVICE_VERSION=1.0.0
+      
+      # 日志配置
+      - LOG_LEVEL=info
+      - LOG_FORMAT=json
+      - LOG_OUTPUT=stdout
+      
+      # 转换器配置
+      - CONVERTER_MAX_INPUT_SIZE=10485760  # 10MB
+      - CONVERTER_MAX_BATCH_SIZE=100
+      - CONVERTER_DEFAULT_PLUGINS=base,commonmark
+      - CONVERTER_TIMEOUT=30s
+    ports:
+      - "8080:8080"  # HTTP API
+      - "9090:9090"  # GRPC API
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - html2md-network
+    # 资源限制
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: html2md-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      html2md:
+        condition: service_healthy
+    networks:
+      - html2md-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis缓存 (可选)
+  redis:
+    image: redis:7-alpine
+    container_name: html2md-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-html2md123}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - html2md-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.2'
+
+  # Prometheus监控 (可选)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: html2md-prometheus
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - html2md-network
+
+# 网络配置
+networks:
+  html2md-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+# 数据卷
+volumes:
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local 

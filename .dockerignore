@@ -1,0 +1,80 @@
+# 构建产物
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE和编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志文件
+*.log
+logs/
+
+# Git相关
+.git/
+.gitignore
+
+# Docker相关
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# 文档和说明
+README.md
+LICENSE
+*.md
+
+# 测试文件
+*_test.go
+testdata/
+
+# 环境配置
+.env
+.env.local
+.env.*.local
+
+# 依赖管理
+vendor/
+
+# 操作系统
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node.js相关（如果有前端资源）
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 配置文件（可能包含敏感信息）
+nginx/
+monitoring/
+ssl/
+
+# 开发工具
+.air.toml
+*.pid 

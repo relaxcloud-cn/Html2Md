@@ -1,0 +1,667 @@
+basePath: /
+definitions:
+  model.APIResponse:
+    properties:
+      code:
+        description: 业务响应码
+        example: 200
+        type: integer
+      data:
+        description: 返回数据
+      msg:
+        description: 接口消息
+        example: success
+        type: string
+    type: object
+  model.BatchConvertItem:
+    properties:
+      error:
+        description: 错误信息（失败时）
+        example: 转换失败
+        type: string
+      index:
+        description: 项目索引
+        example: 0
+        type: integer
+      result:
+        allOf:
+        - $ref: '#/definitions/model.ConvertResponse'
+        description: 转换结果（成功时）
+      success:
+        description: 是否成功
+        example: true
+        type: boolean
+    type: object
+  model.BatchConvertRequest:
+    properties:
+      items:
+        description: 批量转换项目，最多100个
+        items:
+          $ref: '#/definitions/model.ConvertRequest'
+        maxItems: 100
+        minItems: 1
+        type: array
+    required:
+    - items
+    type: object
+  model.BatchConvertResponse:
+    properties:
+      results:
+        description: 批量转换结果
+        items:
+          $ref: '#/definitions/model.BatchConvertItem'
+        type: array
+      summary:
+        allOf:
+        - $ref: '#/definitions/model.BatchSummary'
+        description: 批量转换摘要
+    type: object
+  model.BatchSummary:
+    properties:
+      average_time:
+        description: 平均处理时间
+        example: 500ms
+        type: string
+      failed:
+        description: 失败数
+        example: 2
+        type: integer
+      success:
+        description: 成功数
+        example: 8
+        type: integer
+      total:
+        description: 总数
+        example: 10
+        type: integer
+      total_time:
+        description: 总处理时间
+        example: 5s
+        type: string
+    type: object
+  model.ConversionMeta:
+    properties:
+      author:
+        description: 作者
+        example: Author Name
+        type: string
+      custom_meta:
+        additionalProperties:
+          type: string
+        description: 自定义元数据
+        type: object
+      description:
+        description: 页面描述
+        example: Page description
+        type: string
+      images:
+        description: 图片信息
+        items:
+          $ref: '#/definitions/model.ImageInfo'
+        type: array
+      keywords:
+        description: 关键词
+        items:
+          type: string
+        type: array
+      language:
+        description: 语言
+        example: zh-CN
+        type: string
+      links:
+        description: 链接信息
+        items:
+          $ref: '#/definitions/model.LinkInfo'
+        type: array
+      title:
+        description: 页面标题
+        example: Page Title
+        type: string
+    type: object
+  model.ConversionStats:
+    properties:
+      converted_count:
+        description: 成功转换的元素数量
+        example: 23
+        type: integer
+      elements_count:
+        description: HTML元素数量
+        example: 25
+        type: integer
+      input_size:
+        description: 输入HTML大小（字节）
+        example: 1024
+        type: integer
+      output_size:
+        description: 输出Markdown大小（字节）
+        example: 512
+        type: integer
+      plugins_used:
+        description: 使用的插件列表
+        example:
+        - commonmark
+        - table
+        items:
+          type: string
+        type: array
+      processing_time:
+        description: 处理时间
+        example: 100ms
+        type: string
+      skipped_count:
+        description: 跳过的元素数量
+        example: 2
+        type: integer
+    type: object
+  model.ConvertFromURLRequest:
+    properties:
+      exclude_selector:
+        description: 排除匹配的元素
+        example: .ad
+        type: string
+      headers:
+        additionalProperties:
+          type: string
+        description: 自定义请求头
+        type: object
+      include_selector:
+        description: 选择器选项
+        example: article
+        type: string
+      options:
+        allOf:
+        - $ref: '#/definitions/model.ConvertOptions'
+        description: 转换选项
+      plugins:
+        description: 启用的插件
+        items:
+          type: string
+        type: array
+      timeout:
+        description: 请求选项
+        example: 30
+        type: integer
+      url:
+        description: 网页URL
+        example: https://example.com/page.html
+        type: string
+    required:
+    - url
+    type: object
+  model.ConvertFromURLResponse:
+    properties:
+      content_type:
+        description: 内容类型
+        example: text/html
+        type: string
+      fetch_time:
+        description: 获取时间
+        example: 2s
+        type: string
+      final_url:
+        description: 最终URL（重定向后）
+        type: string
+      markdown:
+        description: 转换后的Markdown内容
+        example: '# Hello World'
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/model.ConversionMeta'
+        description: 转换元数据
+      response_headers:
+        additionalProperties:
+          type: string
+        description: 响应头
+        type: object
+      stats:
+        allOf:
+        - $ref: '#/definitions/model.ConversionStats'
+        description: 转换统计信息
+      status_code:
+        description: HTTP状态码
+        example: 200
+        type: integer
+      url:
+        description: 源URL
+        example: https://example.com/page.html
+        type: string
+      warnings:
+        description: 转换警告信息
+        items:
+          type: string
+        type: array
+    type: object
+  model.ConvertOptions:
+    properties:
+      bold_style:
+        description: '粗体样式: ** 或 __'
+        example: '**'
+        type: string
+      bullet_list_marker:
+        description: 列表样式
+        example: '-'
+        type: string
+      code_block_style:
+        description: 代码块处理
+        example: fenced
+        type: string
+      emphasis_style:
+        description: 强调标记样式
+        example: '*'
+        type: string
+      heading_style:
+        description: 标题样式
+        example: atx
+        type: string
+      image_absolute_path:
+        description: 图片处理选项
+        example: true
+        type: boolean
+      keep_unknown_tags:
+        description: 是否保留HTML标签（对于不支持的标签）
+        example: false
+        type: boolean
+      link_target:
+        description: 链接处理选项
+        example: _blank
+        type: string
+      ordered_list_marker:
+        description: '有序列表标记: . 或 )'
+        example: .
+        type: string
+      table_compact:
+        description: 表格处理
+        example: false
+        type: boolean
+      trim_spaces:
+        description: 是否移除空白字符
+        example: true
+        type: boolean
+    type: object
+  model.ConvertRequest:
+    properties:
+      domain:
+        description: 基础域名，用于转换相对链接
+        example: https://example.com
+        type: string
+      html:
+        description: HTML内容
+        example: <h1>Hello World</h1>
+        type: string
+      options:
+        allOf:
+        - $ref: '#/definitions/model.ConvertOptions'
+        description: 转换选项
+      plugins:
+        description: 启用的插件
+        example:
+        - commonmark
+        - table
+        items:
+          type: string
+        type: array
+    required:
+    - html
+    type: object
+  model.ConvertResponse:
+    properties:
+      markdown:
+        description: 转换后的Markdown内容
+        example: '# Hello World'
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/model.ConversionMeta'
+        description: 转换元数据
+      stats:
+        allOf:
+        - $ref: '#/definitions/model.ConversionStats'
+        description: 转换统计信息
+      warnings:
+        description: 转换警告信息
+        items:
+          type: string
+        type: array
+    type: object
+  model.HealthResponse:
+    properties:
+      memory:
+        allOf:
+        - $ref: '#/definitions/model.MemInfo'
+        description: 内存信息
+      status:
+        description: 服务状态
+        example: ok
+        type: string
+      timestamp:
+        description: 检查时间
+        example: "2023-12-01T12:00:00Z"
+        type: string
+      uptime:
+        description: 运行时间
+        example: 1h30m
+        type: string
+      version:
+        description: 服务版本
+        example: 1.0.0
+        type: string
+    type: object
+  model.ImageInfo:
+    properties:
+      alt:
+        description: 替代文本
+        example: Image description
+        type: string
+      height:
+        description: 高度
+        example: 600
+        type: integer
+      src:
+        description: 图片源地址
+        example: https://example.com/image.jpg
+        type: string
+      title:
+        description: 图片标题
+        example: Image title
+        type: string
+      width:
+        description: 宽度
+        example: 800
+        type: integer
+    type: object
+  model.LinkInfo:
+    properties:
+      href:
+        description: 链接地址
+        example: https://example.com
+        type: string
+      target:
+        description: 链接目标
+        example: _blank
+        type: string
+      text:
+        description: 链接文本
+        example: Example Link
+        type: string
+      title:
+        description: 链接标题
+        example: Link title
+        type: string
+    type: object
+  model.MemInfo:
+    properties:
+      alloc:
+        description: 已分配内存（字节）
+        example: 1048576
+        type: integer
+      num_gc:
+        description: GC次数
+        example: 5
+        type: integer
+      sys:
+        description: 系统内存（字节）
+        example: 4194304
+        type: integer
+      total_alloc:
+        description: 总分配内存（字节）
+        example: 2097152
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: https://github.com/relaxcloud-cn/html2md/issues
+  description: HTML转Markdown转换服务的REST API
+  license:
+    name: MIT
+    url: https://github.com/relaxcloud-cn/html2md/blob/main/LICENSE
+  termsOfService: https://github.com/relaxcloud-cn/html2md
+  title: HTML2Markdown API
+  version: "1.0"
+paths:
+  /api/v1/convert:
+    post:
+      consumes:
+      - application/json
+      description: 将HTML内容转换为Markdown格式，支持多种转换选项和插件
+      parameters:
+      - description: 转换请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.ConvertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 转换成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ConvertResponse'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+        "500":
+          description: 内部服务器错误
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+      summary: 转换HTML为Markdown
+      tags:
+      - 转换
+  /api/v1/convert/batch:
+    post:
+      consumes:
+      - application/json
+      description: 批量转换多个HTML内容为Markdown格式
+      parameters:
+      - description: 批量转换请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatchConvertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 转换成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.BatchConvertResponse'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+        "500":
+          description: 内部服务器错误
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+      summary: 批量转换HTML为Markdown
+      tags:
+      - 转换
+  /api/v1/convert/simple:
+    get:
+      consumes:
+      - text/plain
+      description: 通过URL参数进行简单的HTML转换，适用于快速测试
+      parameters:
+      - description: HTML内容
+        in: query
+        name: html
+        required: true
+        type: string
+      - description: 插件列表，逗号分隔
+        example: '"commonmark,table"'
+        in: query
+        name: plugins
+        type: string
+      - description: 基础域名
+        example: '"https://example.com"'
+        in: query
+        name: domain
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 转换成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ConvertResponse'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+        "500":
+          description: 内部服务器错误
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+      summary: 简单HTML转换（GET方式）
+      tags:
+      - 转换
+  /api/v1/convert/url:
+    post:
+      consumes:
+      - application/json
+      description: 从指定URL获取HTML内容并转换为Markdown格式
+      parameters:
+      - description: URL转换请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.ConvertFromURLRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 转换成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ConvertFromURLResponse'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+        "500":
+          description: 内部服务器错误
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+      summary: 从URL转换HTML为Markdown
+      tags:
+      - 转换
+  /api/v1/demo:
+    get:
+      description: 提供一个简单的演示页面，展示API的使用方法
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: HTML演示页面
+          schema:
+            type: string
+      summary: 演示接口
+      tags:
+      - 演示
+  /api/v1/health:
+    get:
+      description: 检查服务健康状态和运行信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 服务正常
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.HealthResponse'
+              type: object
+        "500":
+          description: 服务异常
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data: {}
+              type: object
+      summary: 健康检查
+      tags:
+      - 系统
+  /api/v1/info:
+    get:
+      description: 获取转换器版本、支持的插件和功能信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 获取转换器信息
+      tags:
+      - 系统
+schemes:
+- http
+- https
+swagger: "2.0"

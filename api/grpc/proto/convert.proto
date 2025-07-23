@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+package html2md.v1;
+
+option go_package = "github.com/relaxcloud-cn/html2md/api/grpc/proto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// HTML转Markdown转换服务
+service ConvertService {
+  // 转换HTML为Markdown
+  rpc Convert(ConvertRequest) returns (ConvertResponse);
+  
+  // 批量转换HTML为Markdown
+  rpc ConvertBatch(BatchConvertRequest) returns (BatchConvertResponse);
+  
+  // 从URL转换HTML为Markdown
+  rpc ConvertFromURL(ConvertFromURLRequest) returns (ConvertFromURLResponse);
+  
+  // 健康检查
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  
+  // 获取转换器信息
+  rpc GetConverterInfo(GetConverterInfoRequest) returns (GetConverterInfoResponse);
+}
+
+// 转换请求
+message ConvertRequest {
+  string html = 1;                          // HTML内容
+  ConvertOptions options = 2;               // 转换选项
+  repeated string plugins = 3;              // 启用的插件
+  string domain = 4;                        // 基础域名
+}
+
+// 转换选项
+message ConvertOptions {
+  bool trim_spaces = 1;                     // 是否移除空白字符
+  bool keep_unknown_tags = 2;               // 是否保留未知HTML标签
+  string link_target = 3;                   // 链接目标
+  bool image_absolute_path = 4;             // 是否转换为绝对路径
+  string code_block_style = 5;              // 代码块样式
+  bool table_compact = 6;                   // 是否压缩表格格式
+  string emphasis_style = 7;                // 强调样式
+  string bold_style = 8;                    // 粗体样式
+  string heading_style = 9;                 // 标题样式
+  string bullet_list_marker = 10;           // 无序列表标记
+  string ordered_list_marker = 11;          // 有序列表标记
+}
+
+// 转换响应
+message ConvertResponse {
+  string markdown = 1;                      // 转换后的Markdown内容
+  ConversionStats stats = 2;                // 转换统计信息
+  repeated string warnings = 3;             // 转换警告信息
+  ConversionMeta metadata = 4;              // 转换元数据
+}
+
+// 转换统计信息
+message ConversionStats {
+  int32 input_size = 1;                     // 输入HTML大小（字节）
+  int32 output_size = 2;                    // 输出Markdown大小（字节）
+  google.protobuf.Duration processing_time = 3; // 处理时间
+  int32 elements_count = 4;                 // HTML元素数量
+  int32 converted_count = 5;                // 成功转换的元素数量
+  int32 skipped_count = 6;                  // 跳过的元素数量
+  repeated string plugins_used = 7;         // 使用的插件列表
+}
+
+// 转换元数据
+message ConversionMeta {
+  string title = 1;                         // 页面标题
+  string description = 2;                   // 页面描述
+  repeated string keywords = 3;             // 关键词
+  string author = 4;                        // 作者
+  string language = 5;                      // 语言
+  repeated ImageInfo images = 6;            // 图片信息
+  repeated LinkInfo links = 7;              // 链接信息
+  map<string, string> custom_meta = 8;      // 自定义元数据
+}
+
+// 图片信息
+message ImageInfo {
+  string src = 1;                           // 图片源地址
+  string alt = 2;                           // 替代文本
+  string title = 3;                         // 图片标题
+  int32 width = 4;                          // 宽度
+  int32 height = 5;                         // 高度
+}
+
+// 链接信息
+message LinkInfo {
+  string href = 1;                          // 链接地址
+  string text = 2;                          // 链接文本
+  string title = 3;                         // 链接标题
+  string target = 4;                        // 链接目标
+}
+
+// 批量转换请求
+message BatchConvertRequest {
+  repeated ConvertRequest items = 1;        // 批量转换项目
+}
+
+// 批量转换响应
+message BatchConvertResponse {
+  repeated BatchConvertItem results = 1;    // 批量转换结果
+  BatchSummary summary = 2;                 // 批量转换摘要
+}
+
+// 批量转换项目结果
+message BatchConvertItem {
+  int32 index = 1;                          // 项目索引
+  bool success = 2;                         // 是否成功
+  ConvertResponse result = 3;               // 转换结果（成功时）
+  string error = 4;                         // 错误信息（失败时）
+}
+
+// 批量转换摘要
+message BatchSummary {
+  int32 total = 1;                          // 总数
+  int32 success = 2;                        // 成功数
+  int32 failed = 3;                         // 失败数
+  google.protobuf.Duration total_time = 4; // 总处理时间
+  google.protobuf.Duration average_time = 5; // 平均处理时间
+}
+
+// 从URL转换请求
+message ConvertFromURLRequest {
+  string url = 1;                           // 网页URL
+  ConvertOptions options = 2;               // 转换选项
+  repeated string plugins = 3;              // 启用的插件
+  string include_selector = 4;              // 只包含匹配的元素
+  string exclude_selector = 5;              // 排除匹配的元素
+  int32 timeout = 6;                        // 请求超时时间（秒）
+  map<string, string> headers = 7;          // 自定义请求头
+}
+
+// 从URL转换响应
+message ConvertFromURLResponse {
+  ConvertResponse convert_response = 1;     // 转换响应
+  string url = 2;                           // 源URL
+  google.protobuf.Duration fetch_time = 3; // 获取时间
+  string content_type = 4;                  // 内容类型
+  int32 status_code = 5;                    // HTTP状态码
+  string final_url = 6;                     // 最终URL（重定向后）
+  map<string, string> response_headers = 7; // 响应头
+}
+
+// 健康检查请求
+message HealthCheckRequest {
+  // 可以为空，用于扩展
+}
+
+// 健康检查响应
+message HealthCheckResponse {
+  string status = 1;                        // 服务状态
+  google.protobuf.Timestamp timestamp = 2; // 检查时间
+  string version = 3;                       // 服务版本
+  string uptime = 4;                        // 运行时间
+  MemInfo memory = 5;                       // 内存信息
+}
+
+// 内存信息
+message MemInfo {
+  uint64 alloc = 1;                         // 已分配内存（字节）
+  uint64 total_alloc = 2;                   // 总分配内存（字节）
+  uint64 sys = 3;                           // 系统内存（字节）
+  uint32 num_gc = 4;                        // GC次数
+}
+
+// 获取转换器信息请求
+message GetConverterInfoRequest {
+  // 可以为空，用于扩展
+}
+
+// 获取转换器信息响应
+message GetConverterInfoResponse {
+  string version = 1;                       // 转换器版本
+  repeated string supported_plugins = 2;    // 支持的插件列表
+  repeated string features = 3;             // 功能特性列表
+  map<string, string> config = 4;          // 配置信息
+} 
