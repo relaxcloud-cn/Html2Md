@@ -1,0 +1,62 @@
+# 编译产物
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE和编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志文件
+*.log
+logs/*.log
+
+# 环境配置
+.env
+.env.local
+.env.*.local
+
+# 依赖管理
+vendor/
+
+# 运行时文件
+*.pid
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# Docker volumes
+postgres_data/
+redis_data/
+prometheus_data/
+
+# 测试覆盖率报告
+coverage.out
+coverage.html
+
+# 其他
+*.orig 

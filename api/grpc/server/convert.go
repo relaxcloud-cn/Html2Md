@@ -39,23 +39,6 @@ func (s *ConvertServer) Convert(ctx context.Context, req *pb.ConvertRequest) (*p
 		Domain:  req.Domain,
 	}
 
-	// 转换选项
-	if req.Options != nil {
-		modelReq.Options = &model.ConvertOptions{
-			TrimSpaces:        req.Options.TrimSpaces,
-			KeepUnknownTags:   req.Options.KeepUnknownTags,
-			LinkTarget:        req.Options.LinkTarget,
-			ImageAbsolutePath: req.Options.ImageAbsolutePath,
-			CodeBlockStyle:    req.Options.CodeBlockStyle,
-			TableCompact:      req.Options.TableCompact,
-			EmphasisStyle:     req.Options.EmphasisStyle,
-			BoldStyle:         req.Options.BoldStyle,
-			HeadingStyle:      req.Options.HeadingStyle,
-			BulletListMarker:  req.Options.BulletListMarker,
-			OrderedListMarker: req.Options.OrderedListMarker,
-		}
-	}
-
 	// 执行转换
 	result, err := s.service.Convert(modelReq)
 	if err != nil {
@@ -65,7 +48,6 @@ func (s *ConvertServer) Convert(ctx context.Context, req *pb.ConvertRequest) (*p
 	// 转换结果为protobuf响应
 	response := &pb.ConvertResponse{
 		Markdown: result.Markdown,
-		Warnings: result.Warnings,
 	}
 
 	// 转换统计信息
@@ -74,43 +56,7 @@ func (s *ConvertServer) Convert(ctx context.Context, req *pb.ConvertRequest) (*p
 			InputSize:      int32(result.Stats.InputSize),
 			OutputSize:     int32(result.Stats.OutputSize),
 			ProcessingTime: durationpb.New(result.Stats.ProcessingTime),
-			ElementsCount:  int32(result.Stats.ElementsCount),
-			ConvertedCount: int32(result.Stats.ConvertedCount),
-			SkippedCount:   int32(result.Stats.SkippedCount),
 			PluginsUsed:    result.Stats.PluginsUsed,
-		}
-	}
-
-	// 转换元数据
-	if result.Metadata != nil {
-		response.Metadata = &pb.ConversionMeta{
-			Title:       result.Metadata.Title,
-			Description: result.Metadata.Description,
-			Keywords:    result.Metadata.Keywords,
-			Author:      result.Metadata.Author,
-			Language:    result.Metadata.Language,
-			CustomMeta:  result.Metadata.CustomMeta,
-		}
-
-		// 转换图片信息
-		for _, img := range result.Metadata.Images {
-			response.Metadata.Images = append(response.Metadata.Images, &pb.ImageInfo{
-				Src:    img.Src,
-				Alt:    img.Alt,
-				Title:  img.Title,
-				Width:  int32(img.Width),
-				Height: int32(img.Height),
-			})
-		}
-
-		// 转换链接信息
-		for _, link := range result.Metadata.Links {
-			response.Metadata.Links = append(response.Metadata.Links, &pb.LinkInfo{
-				Href:   link.Href,
-				Text:   link.Text,
-				Title:  link.Title,
-				Target: link.Target,
-			})
 		}
 	}
 
@@ -129,22 +75,6 @@ func (s *ConvertServer) ConvertBatch(ctx context.Context, req *pb.BatchConvertRe
 			HTML:    item.Html,
 			Plugins: item.Plugins,
 			Domain:  item.Domain,
-		}
-
-		if item.Options != nil {
-			modelReq.Items[i].Options = &model.ConvertOptions{
-				TrimSpaces:        item.Options.TrimSpaces,
-				KeepUnknownTags:   item.Options.KeepUnknownTags,
-				LinkTarget:        item.Options.LinkTarget,
-				ImageAbsolutePath: item.Options.ImageAbsolutePath,
-				CodeBlockStyle:    item.Options.CodeBlockStyle,
-				TableCompact:      item.Options.TableCompact,
-				EmphasisStyle:     item.Options.EmphasisStyle,
-				BoldStyle:         item.Options.BoldStyle,
-				HeadingStyle:      item.Options.HeadingStyle,
-				BulletListMarker:  item.Options.BulletListMarker,
-				OrderedListMarker: item.Options.OrderedListMarker,
-			}
 		}
 	}
 
@@ -170,7 +100,6 @@ func (s *ConvertServer) ConvertBatch(ctx context.Context, req *pb.BatchConvertRe
 			// 转换成功的结果
 			pbResult := &pb.ConvertResponse{
 				Markdown: item.Result.Markdown,
-				Warnings: item.Result.Warnings,
 			}
 
 			if item.Result.Stats != nil {
@@ -178,9 +107,6 @@ func (s *ConvertServer) ConvertBatch(ctx context.Context, req *pb.BatchConvertRe
 					InputSize:      int32(item.Result.Stats.InputSize),
 					OutputSize:     int32(item.Result.Stats.OutputSize),
 					ProcessingTime: durationpb.New(item.Result.Stats.ProcessingTime),
-					ElementsCount:  int32(item.Result.Stats.ElementsCount),
-					ConvertedCount: int32(item.Result.Stats.ConvertedCount),
-					SkippedCount:   int32(item.Result.Stats.SkippedCount),
 					PluginsUsed:    item.Result.Stats.PluginsUsed,
 				}
 			}
@@ -201,12 +127,6 @@ func (s *ConvertServer) ConvertBatch(ctx context.Context, req *pb.BatchConvertRe
 	}
 
 	return response, nil
-}
-
-// ConvertFromURL 从URL转换HTML为Markdown
-func (s *ConvertServer) ConvertFromURL(ctx context.Context, req *pb.ConvertFromURLRequest) (*pb.ConvertFromURLResponse, error) {
-	// TODO: 实现从URL转换的逻辑
-	return nil, status.Errorf(codes.Unimplemented, "从URL转换功能暂未实现")
 }
 
 // HealthCheck 健康检查

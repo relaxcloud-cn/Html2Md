@@ -100,7 +100,6 @@ make docker-compose-logs      # 查看日志
 | `POST` | `/api/v1/convert` | 转换HTML为Markdown |
 | `GET` | `/api/v1/convert/simple` | 简单转换（GET方式） |
 | `POST` | `/api/v1/convert/batch` | 批量转换 |
-| `POST` | `/api/v1/convert/url` | 从URL转换 |
 | `GET` | `/api/v1/health` | 健康检查 |
 | `GET` | `/api/v1/info` | 转换器信息 |
 | `GET` | `/api/v1/demo` | 演示页面 |

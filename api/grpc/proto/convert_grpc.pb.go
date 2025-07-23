@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	ConvertService_Convert_FullMethodName          = "/html2md.v1.ConvertService/Convert"
 	ConvertService_ConvertBatch_FullMethodName     = "/html2md.v1.ConvertService/ConvertBatch"
-	ConvertService_ConvertFromURL_FullMethodName   = "/html2md.v1.ConvertService/ConvertFromURL"
 	ConvertService_HealthCheck_FullMethodName      = "/html2md.v1.ConvertService/HealthCheck"
 	ConvertService_GetConverterInfo_FullMethodName = "/html2md.v1.ConvertService/GetConverterInfo"
 )
@@ -36,8 +35,6 @@ type ConvertServiceClient interface {
 	Convert(ctx context.Context, in *ConvertRequest, opts ...grpc.CallOption) (*ConvertResponse, error)
 	// 批量转换HTML为Markdown
 	ConvertBatch(ctx context.Context, in *BatchConvertRequest, opts ...grpc.CallOption) (*BatchConvertResponse, error)
-	// 从URL转换HTML为Markdown
-	ConvertFromURL(ctx context.Context, in *ConvertFromURLRequest, opts ...grpc.CallOption) (*ConvertFromURLResponse, error)
 	// 健康检查
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	// 获取转换器信息
@@ -66,16 +63,6 @@ func (c *convertServiceClient) ConvertBatch(ctx context.Context, in *BatchConver
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BatchConvertResponse)
 	err := c.cc.Invoke(ctx, ConvertService_ConvertBatch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *convertServiceClient) ConvertFromURL(ctx context.Context, in *ConvertFromURLRequest, opts ...grpc.CallOption) (*ConvertFromURLResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ConvertFromURLResponse)
-	err := c.cc.Invoke(ctx, ConvertService_ConvertFromURL_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,8 +99,6 @@ type ConvertServiceServer interface {
 	Convert(context.Context, *ConvertRequest) (*ConvertResponse, error)
 	// 批量转换HTML为Markdown
 	ConvertBatch(context.Context, *BatchConvertRequest) (*BatchConvertResponse, error)
-	// 从URL转换HTML为Markdown
-	ConvertFromURL(context.Context, *ConvertFromURLRequest) (*ConvertFromURLResponse, error)
 	// 健康检查
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	// 获取转换器信息
@@ -133,9 +118,6 @@ func (UnimplementedConvertServiceServer) Convert(context.Context, *ConvertReques
 }
 func (UnimplementedConvertServiceServer) ConvertBatch(context.Context, *BatchConvertRequest) (*BatchConvertResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConvertBatch not implemented")
-}
-func (UnimplementedConvertServiceServer) ConvertFromURL(context.Context, *ConvertFromURLRequest) (*ConvertFromURLResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ConvertFromURL not implemented")
 }
 func (UnimplementedConvertServiceServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
@@ -200,24 +182,6 @@ func _ConvertService_ConvertBatch_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ConvertService_ConvertFromURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ConvertFromURLRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ConvertServiceServer).ConvertFromURL(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ConvertService_ConvertFromURL_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConvertServiceServer).ConvertFromURL(ctx, req.(*ConvertFromURLRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ConvertService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HealthCheckRequest)
 	if err := dec(in); err != nil {
@@ -268,10 +232,6 @@ var ConvertService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ConvertBatch",
 			Handler:    _ConvertService_ConvertBatch_Handler,
-		},
-		{
-			MethodName: "ConvertFromURL",
-			Handler:    _ConvertService_ConvertFromURL_Handler,
 		},
 		{
 			MethodName: "HealthCheck",

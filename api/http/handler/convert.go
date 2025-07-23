@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/relaxcloud-cn/html2md/internal/model"
@@ -90,41 +91,6 @@ func (h *ConvertHandler) ConvertBatch(c *gin.Context) {
 	c.JSON(http.StatusOK, model.NewSuccessResponse(result))
 }
 
-// ConvertFromURL 从URL转换HTML为Markdown
-// @Summary 从URL转换HTML为Markdown
-// @Description 从指定URL获取HTML内容并转换为Markdown格式
-// @Tags 转换
-// @Accept json
-// @Produce json
-// @Param request body model.ConvertFromURLRequest true "URL转换请求参数"
-// @Success 200 {object} model.APIResponse{data=model.ConvertFromURLResponse} "转换成功"
-// @Failure 400 {object} model.APIResponse{data=interface{}} "请求参数错误"
-// @Failure 500 {object} model.APIResponse{data=interface{}} "内部服务器错误"
-// @Router /api/v1/convert/url [post]
-func (h *ConvertHandler) ConvertFromURL(c *gin.Context) {
-	var req model.ConvertFromURLRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, model.NewErrorResponse(
-			model.CodeBadRequest,
-			"请求参数格式错误: "+err.Error(),
-			nil,
-		))
-		return
-	}
-
-	result, err := h.service.ConvertFromURL(&req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(
-			model.CodeInternalError,
-			"URL转换失败: "+err.Error(),
-			nil,
-		))
-		return
-	}
-
-	c.JSON(http.StatusOK, model.NewSuccessResponse(result))
-}
-
 // Health 健康检查
 // @Summary 健康检查
 // @Description 检查服务健康状态和运行信息
@@ -166,7 +132,7 @@ func (h *ConvertHandler) GetConverterInfo(c *gin.Context) {
 // @Accept plain
 // @Produce json
 // @Param html query string true "HTML内容"
-// @Param plugins query string false "插件列表，逗号分隔" example("commonmark,table")
+// @Param plugins query string false "插件列表，逗号分隔" example("base,commonmark")
 // @Param domain query string false "基础域名" example("https://example.com")
 // @Success 200 {object} model.APIResponse{data=model.ConvertResponse} "转换成功"
 // @Failure 400 {object} model.APIResponse{data=interface{}} "请求参数错误"
@@ -190,8 +156,12 @@ func (h *ConvertHandler) ConvertSimple(c *gin.Context) {
 
 	// 解析插件参数
 	if pluginsStr := c.Query("plugins"); pluginsStr != "" {
-		// 简单分割，实际项目中可能需要更复杂的解析
-		req.Plugins = []string{pluginsStr}
+		// 按逗号分割插件列表
+		req.Plugins = strings.Split(pluginsStr, ",")
+		// 去除空白字符
+		for i, plugin := range req.Plugins {
+			req.Plugins[i] = strings.TrimSpace(plugin)
+		}
 	}
 
 	result, err := h.service.Convert(req)

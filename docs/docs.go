@@ -203,7 +203,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "\"commonmark,table\"",
+                        "example": "\"base,commonmark\"",
                         "description": "插件列表，逗号分隔",
                         "name": "plugins",
                         "in": "query"
@@ -229,84 +229,6 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/model.ConvertResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "请求参数错误",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {}
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "内部服务器错误",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {}
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/convert/url": {
-            "post": {
-                "description": "从指定URL获取HTML内容并转换为Markdown格式",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "转换"
-                ],
-                "summary": "从URL转换HTML为Markdown",
-                "parameters": [
-                    {
-                        "description": "URL转换请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.ConvertFromURLRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "转换成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.ConvertFromURLResponse"
                                         }
                                     }
                                 }
@@ -564,72 +486,9 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ConversionMeta": {
-            "type": "object",
-            "properties": {
-                "author": {
-                    "description": "作者",
-                    "type": "string",
-                    "example": "Author Name"
-                },
-                "custom_meta": {
-                    "description": "自定义元数据",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "description": {
-                    "description": "页面描述",
-                    "type": "string",
-                    "example": "Page description"
-                },
-                "images": {
-                    "description": "图片信息",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.ImageInfo"
-                    }
-                },
-                "keywords": {
-                    "description": "关键词",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "language": {
-                    "description": "语言",
-                    "type": "string",
-                    "example": "zh-CN"
-                },
-                "links": {
-                    "description": "链接信息",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.LinkInfo"
-                    }
-                },
-                "title": {
-                    "description": "页面标题",
-                    "type": "string",
-                    "example": "Page Title"
-                }
-            }
-        },
         "model.ConversionStats": {
             "type": "object",
             "properties": {
-                "converted_count": {
-                    "description": "成功转换的元素数量",
-                    "type": "integer",
-                    "example": 23
-                },
-                "elements_count": {
-                    "description": "HTML元素数量",
-                    "type": "integer",
-                    "example": 25
-                },
                 "input_size": {
                     "description": "输入HTML大小（字节）",
                     "type": "integer",
@@ -647,193 +506,14 @@ const docTemplate = `{
                         "type": "string"
                     },
                     "example": [
-                        "commonmark",
-                        "table"
+                        "base",
+                        "commonmark"
                     ]
                 },
                 "processing_time": {
                     "description": "处理时间",
                     "type": "string",
                     "example": "100ms"
-                },
-                "skipped_count": {
-                    "description": "跳过的元素数量",
-                    "type": "integer",
-                    "example": 2
-                }
-            }
-        },
-        "model.ConvertFromURLRequest": {
-            "type": "object",
-            "required": [
-                "url"
-            ],
-            "properties": {
-                "exclude_selector": {
-                    "description": "排除匹配的元素",
-                    "type": "string",
-                    "example": ".ad"
-                },
-                "headers": {
-                    "description": "自定义请求头",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "include_selector": {
-                    "description": "选择器选项",
-                    "type": "string",
-                    "example": "article"
-                },
-                "options": {
-                    "description": "转换选项",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.ConvertOptions"
-                        }
-                    ]
-                },
-                "plugins": {
-                    "description": "启用的插件",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "timeout": {
-                    "description": "请求选项",
-                    "type": "integer",
-                    "example": 30
-                },
-                "url": {
-                    "description": "网页URL",
-                    "type": "string",
-                    "example": "https://example.com/page.html"
-                }
-            }
-        },
-        "model.ConvertFromURLResponse": {
-            "type": "object",
-            "properties": {
-                "content_type": {
-                    "description": "内容类型",
-                    "type": "string",
-                    "example": "text/html"
-                },
-                "fetch_time": {
-                    "description": "获取时间",
-                    "type": "string",
-                    "example": "2s"
-                },
-                "final_url": {
-                    "description": "最终URL（重定向后）",
-                    "type": "string"
-                },
-                "markdown": {
-                    "description": "转换后的Markdown内容",
-                    "type": "string",
-                    "example": "# Hello World"
-                },
-                "metadata": {
-                    "description": "转换元数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.ConversionMeta"
-                        }
-                    ]
-                },
-                "response_headers": {
-                    "description": "响应头",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "stats": {
-                    "description": "转换统计信息",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.ConversionStats"
-                        }
-                    ]
-                },
-                "status_code": {
-                    "description": "HTTP状态码",
-                    "type": "integer",
-                    "example": 200
-                },
-                "url": {
-                    "description": "源URL",
-                    "type": "string",
-                    "example": "https://example.com/page.html"
-                },
-                "warnings": {
-                    "description": "转换警告信息",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "model.ConvertOptions": {
-            "type": "object",
-            "properties": {
-                "bold_style": {
-                    "description": "粗体样式: ** 或 __",
-                    "type": "string",
-                    "example": "**"
-                },
-                "bullet_list_marker": {
-                    "description": "列表样式",
-                    "type": "string",
-                    "example": "-"
-                },
-                "code_block_style": {
-                    "description": "代码块处理",
-                    "type": "string",
-                    "example": "fenced"
-                },
-                "emphasis_style": {
-                    "description": "强调标记样式",
-                    "type": "string",
-                    "example": "*"
-                },
-                "heading_style": {
-                    "description": "标题样式",
-                    "type": "string",
-                    "example": "atx"
-                },
-                "image_absolute_path": {
-                    "description": "图片处理选项",
-                    "type": "boolean",
-                    "example": true
-                },
-                "keep_unknown_tags": {
-                    "description": "是否保留HTML标签（对于不支持的标签）",
-                    "type": "boolean",
-                    "example": false
-                },
-                "link_target": {
-                    "description": "链接处理选项",
-                    "type": "string",
-                    "example": "_blank"
-                },
-                "ordered_list_marker": {
-                    "description": "有序列表标记: . 或 )",
-                    "type": "string",
-                    "example": "."
-                },
-                "table_compact": {
-                    "description": "表格处理",
-                    "type": "boolean",
-                    "example": false
-                },
-                "trim_spaces": {
-                    "description": "是否移除空白字符",
-                    "type": "boolean",
-                    "example": true
                 }
             }
         },
@@ -853,14 +533,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "\u003ch1\u003eHello World\u003c/h1\u003e"
                 },
-                "options": {
-                    "description": "转换选项",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.ConvertOptions"
-                        }
-                    ]
-                },
                 "plugins": {
                     "description": "启用的插件",
                     "type": "array",
@@ -868,8 +540,8 @@ const docTemplate = `{
                         "type": "string"
                     },
                     "example": [
-                        "commonmark",
-                        "table"
+                        "base",
+                        "commonmark"
                     ]
                 }
             }
@@ -882,14 +554,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "# Hello World"
                 },
-                "metadata": {
-                    "description": "转换元数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.ConversionMeta"
-                        }
-                    ]
-                },
                 "stats": {
                     "description": "转换统计信息",
                     "allOf": [
@@ -897,13 +561,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.ConversionStats"
                         }
                     ]
-                },
-                "warnings": {
-                    "description": "转换警告信息",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },
@@ -937,61 +594,6 @@ const docTemplate = `{
                     "description": "服务版本",
                     "type": "string",
                     "example": "1.0.0"
-                }
-            }
-        },
-        "model.ImageInfo": {
-            "type": "object",
-            "properties": {
-                "alt": {
-                    "description": "替代文本",
-                    "type": "string",
-                    "example": "Image description"
-                },
-                "height": {
-                    "description": "高度",
-                    "type": "integer",
-                    "example": 600
-                },
-                "src": {
-                    "description": "图片源地址",
-                    "type": "string",
-                    "example": "https://example.com/image.jpg"
-                },
-                "title": {
-                    "description": "图片标题",
-                    "type": "string",
-                    "example": "Image title"
-                },
-                "width": {
-                    "description": "宽度",
-                    "type": "integer",
-                    "example": 800
-                }
-            }
-        },
-        "model.LinkInfo": {
-            "type": "object",
-            "properties": {
-                "href": {
-                    "description": "链接地址",
-                    "type": "string",
-                    "example": "https://example.com"
-                },
-                "target": {
-                    "description": "链接目标",
-                    "type": "string",
-                    "example": "_blank"
-                },
-                "text": {
-                    "description": "链接文本",
-                    "type": "string",
-                    "example": "Example Link"
-                },
-                "title": {
-                    "description": "链接标题",
-                    "type": "string",
-                    "example": "Link title"
                 }
             }
         },

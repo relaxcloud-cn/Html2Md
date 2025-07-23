@@ -32,13 +32,6 @@ func (s *ConvertService) ConvertBatch(req *model.BatchConvertRequest) (*model.Ba
 	return s.converter.ConvertBatch(req)
 }
 
-// ConvertFromURL 从URL转换HTML为Markdown (TODO: 实现)
-func (s *ConvertService) ConvertFromURL(req *model.ConvertFromURLRequest) (*model.ConvertFromURLResponse, error) {
-	// TODO: 实现从URL获取HTML内容并转换
-	// 这里需要HTTP客户端来获取URL内容
-	return nil, nil
-}
-
 // Health 健康检查
 func (s *ConvertService) Health() (*model.HealthResponse, error) {
 	var m runtime.MemStats

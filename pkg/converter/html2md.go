@@ -77,7 +77,6 @@ func (c *Converter) Convert(req *model.ConvertRequest) (*model.ConvertResponse, 
 	response := &model.ConvertResponse{
 		Markdown: markdown,
 		Stats:    stats,
-		Warnings: []string{}, // TODO: 收集转换警告
 	}
 
 	return response, nil
@@ -133,16 +132,6 @@ func (c *Converter) configurePlugins(plugins []string) ([]converter.Plugin, erro
 
 	for _, plugin := range plugins {
 		switch strings.ToLower(plugin) {
-		case "table":
-			// 使用内置的表格插件
-			// tablePlugin := table.NewTablePlugin()
-			// result = append(result, tablePlugin)
-			// TODO: 需要导入table插件
-		case "strikethrough":
-			// 使用内置的删除线插件
-			// strikethroughPlugin := strikethrough.NewStrikethroughPlugin()
-			// result = append(result, strikethroughPlugin)
-			// TODO: 需要导入strikethrough插件
 		case "commonmark", "base":
 			// 已经默认加载，跳过
 			continue
@@ -159,8 +148,6 @@ func (c *Converter) GetSupportedPlugins() []string {
 	return []string{
 		"base",
 		"commonmark",
-		"table",         // TODO: 待实现
-		"strikethrough", // TODO: 待实现
 	}
 }
 
@@ -185,7 +172,6 @@ func (c *Converter) GetConverterInfo() map[string]interface{} {
 		"supported_plugins": c.GetSupportedPlugins(),
 		"features": []string{
 			"CommonMark支持",
-			"表格转换",
 			"代码块转换",
 			"链接和图片处理",
 			"自定义规则支持",

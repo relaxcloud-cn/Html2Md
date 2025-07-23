@@ -56,7 +56,6 @@ func NewRouter() *gin.Engine {
 		// 转换相关接口
 		v1.POST("/convert", convertHandler.Convert)
 		v1.POST("/convert/batch", convertHandler.ConvertBatch)
-		v1.POST("/convert/url", convertHandler.ConvertFromURL)
 		v1.GET("/convert/simple", convertHandler.ConvertSimple)
 
 		// 系统接口
