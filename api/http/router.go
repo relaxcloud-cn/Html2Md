@@ -151,8 +151,7 @@ func demoHandler(c *gin.Context) {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        html: html,
-                        plugins: ['commonmark']
+                        html: html
                     })
                 });
                 

@@ -89,14 +89,6 @@ definitions:
         description: 输出Markdown大小（字节）
         example: 512
         type: integer
-      plugins_used:
-        description: 使用的插件列表
-        example:
-        - base
-        - commonmark
-        items:
-          type: string
-        type: array
       processing_time:
         description: 处理时间
         example: 100ms
@@ -104,22 +96,10 @@ definitions:
     type: object
   model.ConvertRequest:
     properties:
-      domain:
-        description: 基础域名，用于转换相对链接
-        example: https://example.com
-        type: string
       html:
         description: HTML内容
         example: <h1>Hello World</h1>
         type: string
-      plugins:
-        description: 启用的插件
-        example:
-        - base
-        - commonmark
-        items:
-          type: string
-        type: array
     required:
     - html
     type: object
@@ -286,16 +266,6 @@ paths:
         in: query
         name: html
         required: true
-        type: string
-      - description: 插件列表，逗号分隔
-        example: '"base,commonmark"'
-        in: query
-        name: plugins
-        type: string
-      - description: 基础域名
-        example: '"https://example.com"'
-        in: query
-        name: domain
         type: string
       produces:
       - application/json

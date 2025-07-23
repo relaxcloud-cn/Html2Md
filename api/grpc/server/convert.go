@@ -34,9 +34,7 @@ func NewConvertServer() *ConvertServer {
 func (s *ConvertServer) Convert(ctx context.Context, req *pb.ConvertRequest) (*pb.ConvertResponse, error) {
 	// 将protobuf请求转换为内部模型
 	modelReq := &model.ConvertRequest{
-		HTML:    req.Html,
-		Plugins: req.Plugins,
-		Domain:  req.Domain,
+		HTML: req.Html,
 	}
 
 	// 执行转换
@@ -56,7 +54,6 @@ func (s *ConvertServer) Convert(ctx context.Context, req *pb.ConvertRequest) (*p
 			InputSize:      int32(result.Stats.InputSize),
 			OutputSize:     int32(result.Stats.OutputSize),
 			ProcessingTime: durationpb.New(result.Stats.ProcessingTime),
-			PluginsUsed:    result.Stats.PluginsUsed,
 		}
 	}
 
@@ -72,9 +69,7 @@ func (s *ConvertServer) ConvertBatch(ctx context.Context, req *pb.BatchConvertRe
 
 	for i, item := range req.Items {
 		modelReq.Items[i] = model.ConvertRequest{
-			HTML:    item.Html,
-			Plugins: item.Plugins,
-			Domain:  item.Domain,
+			HTML: item.Html,
 		}
 	}
 
@@ -107,7 +102,6 @@ func (s *ConvertServer) ConvertBatch(ctx context.Context, req *pb.BatchConvertRe
 					InputSize:      int32(item.Result.Stats.InputSize),
 					OutputSize:     int32(item.Result.Stats.OutputSize),
 					ProcessingTime: durationpb.New(item.Result.Stats.ProcessingTime),
-					PluginsUsed:    item.Result.Stats.PluginsUsed,
 				}
 			}
 

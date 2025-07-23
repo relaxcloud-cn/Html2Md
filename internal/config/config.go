@@ -62,11 +62,10 @@ type LogConfig struct {
 
 // ConverterConfig 转换器配置
 type ConverterConfig struct {
-	MaxInputSize   int           `json:"max_input_size"`  // 最大输入大小（字节）
-	MaxBatchSize   int           `json:"max_batch_size"`  // 最大批量转换数量
-	DefaultPlugins []string      `json:"default_plugins"` // 默认启用的插件
-	Timeout        time.Duration `json:"timeout"`         // 转换超时时间
-	EnableCache    bool          `json:"enable_cache"`    // 是否启用缓存
+	MaxInputSize int           `json:"max_input_size"` // 最大输入大小（字节）
+	MaxBatchSize int           `json:"max_batch_size"` // 最大批量转换数量
+	Timeout      time.Duration `json:"timeout"`        // 转换超时时间
+	EnableCache  bool          `json:"enable_cache"`   // 是否启用缓存
 }
 
 // LoadConfig 加载配置
@@ -99,11 +98,10 @@ func LoadConfig() (*Config, error) {
 			File:   getEnvAsString("LOG_FILE", ""),
 		},
 		Converter: ConverterConfig{
-			MaxInputSize:   getEnvAsInt("CONVERTER_MAX_INPUT_SIZE", 10*1024*1024), // 10MB
-			MaxBatchSize:   getEnvAsInt("CONVERTER_MAX_BATCH_SIZE", 100),
-			DefaultPlugins: getEnvAsStringSlice("CONVERTER_DEFAULT_PLUGINS", []string{"base", "commonmark"}),
-			Timeout:        getEnvAsDuration("CONVERTER_TIMEOUT", "30s"),
-			EnableCache:    getEnvAsBool("CONVERTER_ENABLE_CACHE", false),
+			MaxInputSize: getEnvAsInt("CONVERTER_MAX_INPUT_SIZE", 10*1024*1024), // 10MB
+			MaxBatchSize: getEnvAsInt("CONVERTER_MAX_BATCH_SIZE", 100),
+			Timeout:      getEnvAsDuration("CONVERTER_TIMEOUT", "30s"),
+			EnableCache:  getEnvAsBool("CONVERTER_ENABLE_CACHE", false),
 		},
 	}
 

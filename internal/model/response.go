@@ -13,7 +13,6 @@ type ConversionStats struct {
 	InputSize      int           `json:"input_size" example:"1024"`                            // 输入HTML大小（字节）
 	OutputSize     int           `json:"output_size" example:"512"`                            // 输出Markdown大小（字节）
 	ProcessingTime time.Duration `json:"processing_time" swaggertype:"string" example:"100ms"` // 处理时间
-	PluginsUsed    []string      `json:"plugins_used" example:"base,commonmark"`               // 使用的插件列表
 }
 
 // HealthResponse 健康检查响应数据

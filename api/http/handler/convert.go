@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/relaxcloud-cn/html2md/internal/model"
@@ -132,8 +131,6 @@ func (h *ConvertHandler) GetConverterInfo(c *gin.Context) {
 // @Accept plain
 // @Produce json
 // @Param html query string true "HTML内容"
-// @Param plugins query string false "插件列表，逗号分隔" example("base,commonmark")
-// @Param domain query string false "基础域名" example("https://example.com")
 // @Success 200 {object} model.APIResponse{data=model.ConvertResponse} "转换成功"
 // @Failure 400 {object} model.APIResponse{data=interface{}} "请求参数错误"
 // @Failure 500 {object} model.APIResponse{data=interface{}} "内部服务器错误"
@@ -150,18 +147,7 @@ func (h *ConvertHandler) ConvertSimple(c *gin.Context) {
 	}
 
 	req := &model.ConvertRequest{
-		HTML:   html,
-		Domain: c.Query("domain"),
-	}
-
-	// 解析插件参数
-	if pluginsStr := c.Query("plugins"); pluginsStr != "" {
-		// 按逗号分割插件列表
-		req.Plugins = strings.Split(pluginsStr, ",")
-		// 去除空白字符
-		for i, plugin := range req.Plugins {
-			req.Plugins[i] = strings.TrimSpace(plugin)
-		}
+		HTML: html,
 	}
 
 	result, err := h.service.Convert(req)

@@ -26,9 +26,7 @@ const (
 // 转换请求
 type ConvertRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Html          string                 `protobuf:"bytes,1,opt,name=html,proto3" json:"html,omitempty"`       // HTML内容
-	Plugins       []string               `protobuf:"bytes,2,rep,name=plugins,proto3" json:"plugins,omitempty"` // 启用的插件
-	Domain        string                 `protobuf:"bytes,3,opt,name=domain,proto3" json:"domain,omitempty"`   // 基础域名
+	Html          string                 `protobuf:"bytes,1,opt,name=html,proto3" json:"html,omitempty"` // HTML内容
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -66,20 +64,6 @@ func (*ConvertRequest) Descriptor() ([]byte, []int) {
 func (x *ConvertRequest) GetHtml() string {
 	if x != nil {
 		return x.Html
-	}
-	return ""
-}
-
-func (x *ConvertRequest) GetPlugins() []string {
-	if x != nil {
-		return x.Plugins
-	}
-	return nil
-}
-
-func (x *ConvertRequest) GetDomain() string {
-	if x != nil {
-		return x.Domain
 	}
 	return ""
 }
@@ -143,7 +127,6 @@ type ConversionStats struct {
 	InputSize      int32                  `protobuf:"varint,1,opt,name=input_size,json=inputSize,proto3" json:"input_size,omitempty"`               // 输入HTML大小（字节）
 	OutputSize     int32                  `protobuf:"varint,2,opt,name=output_size,json=outputSize,proto3" json:"output_size,omitempty"`            // 输出Markdown大小（字节）
 	ProcessingTime *durationpb.Duration   `protobuf:"bytes,3,opt,name=processing_time,json=processingTime,proto3" json:"processing_time,omitempty"` // 处理时间
-	PluginsUsed    []string               `protobuf:"bytes,4,rep,name=plugins_used,json=pluginsUsed,proto3" json:"plugins_used,omitempty"`          // 使用的插件列表
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -195,13 +178,6 @@ func (x *ConversionStats) GetOutputSize() int32 {
 func (x *ConversionStats) GetProcessingTime() *durationpb.Duration {
 	if x != nil {
 		return x.ProcessingTime
-	}
-	return nil
-}
-
-func (x *ConversionStats) GetPluginsUsed() []string {
-	if x != nil {
-		return x.PluginsUsed
 	}
 	return nil
 }
@@ -744,21 +720,18 @@ var File_api_grpc_proto_convert_proto protoreflect.FileDescriptor
 const file_api_grpc_proto_convert_proto_rawDesc = "" +
 	"\n" +
 	"\x1capi/grpc/proto/convert.proto\x12\n" +
-	"html2md.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"V\n" +
+	"html2md.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"$\n" +
 	"\x0eConvertRequest\x12\x12\n" +
-	"\x04html\x18\x01 \x01(\tR\x04html\x12\x18\n" +
-	"\aplugins\x18\x02 \x03(\tR\aplugins\x12\x16\n" +
-	"\x06domain\x18\x03 \x01(\tR\x06domain\"`\n" +
+	"\x04html\x18\x01 \x01(\tR\x04html\"`\n" +
 	"\x0fConvertResponse\x12\x1a\n" +
 	"\bmarkdown\x18\x01 \x01(\tR\bmarkdown\x121\n" +
-	"\x05stats\x18\x02 \x01(\v2\x1b.html2md.v1.ConversionStatsR\x05stats\"\xb8\x01\n" +
+	"\x05stats\x18\x02 \x01(\v2\x1b.html2md.v1.ConversionStatsR\x05stats\"\x95\x01\n" +
 	"\x0fConversionStats\x12\x1d\n" +
 	"\n" +
 	"input_size\x18\x01 \x01(\x05R\tinputSize\x12\x1f\n" +
 	"\voutput_size\x18\x02 \x01(\x05R\n" +
 	"outputSize\x12B\n" +
-	"\x0fprocessing_time\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x0eprocessingTime\x12!\n" +
-	"\fplugins_used\x18\x04 \x03(\tR\vpluginsUsed\"G\n" +
+	"\x0fprocessing_time\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x0eprocessingTime\"G\n" +
 	"\x13BatchConvertRequest\x120\n" +
 	"\x05items\x18\x01 \x03(\v2\x1a.html2md.v1.ConvertRequestR\x05items\"\x82\x01\n" +
 	"\x14BatchConvertResponse\x126\n" +

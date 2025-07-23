@@ -200,20 +200,6 @@ const docTemplate = `{
                         "name": "html",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "example": "\"base,commonmark\"",
-                        "description": "插件列表，逗号分隔",
-                        "name": "plugins",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "\"https://example.com\"",
-                        "description": "基础域名",
-                        "name": "domain",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -499,17 +485,6 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 512
                 },
-                "plugins_used": {
-                    "description": "使用的插件列表",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "base",
-                        "commonmark"
-                    ]
-                },
                 "processing_time": {
                     "description": "处理时间",
                     "type": "string",
@@ -523,26 +498,10 @@ const docTemplate = `{
                 "html"
             ],
             "properties": {
-                "domain": {
-                    "description": "基础域名，用于转换相对链接",
-                    "type": "string",
-                    "example": "https://example.com"
-                },
                 "html": {
                     "description": "HTML内容",
                     "type": "string",
                     "example": "\u003ch1\u003eHello World\u003c/h1\u003e"
-                },
-                "plugins": {
-                    "description": "启用的插件",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "base",
-                        "commonmark"
-                    ]
                 }
             }
         },

@@ -31,36 +31,16 @@ func (c *Converter) Convert(req *model.ConvertRequest) (*model.ConvertResponse, 
 		return nil, err
 	}
 
-	// 配置插件
-	plugins := []converter.Plugin{
-		base.NewBasePlugin(),
-		commonmark.NewCommonmarkPlugin(),
-	}
-
-	// 添加额外的插件
-	if len(req.Plugins) > 0 {
-		additionalPlugins, err := c.configurePlugins(req.Plugins)
-		if err != nil {
-			return nil, fmt.Errorf("配置插件失败: %w", err)
-		}
-		plugins = append(plugins, additionalPlugins...)
-	}
-
-	// 创建转换器实例
+	// 创建转换器实例，使用默认的base和commonmark插件
 	conv := converter.NewConverter(
-		converter.WithPlugins(plugins...),
+		converter.WithPlugins(
+			base.NewBasePlugin(),
+			commonmark.NewCommonmarkPlugin(),
+		),
 	)
 
-	// 创建转换选项
-	var options []converter.ConvertOptionFunc
-
-	// 添加域名配置
-	if req.Domain != "" {
-		options = append(options, converter.WithDomain(req.Domain))
-	}
-
 	// 执行转换 - 使用转换器实例的ConvertString方法
-	markdown, err := conv.ConvertString(req.HTML, options...)
+	markdown, err := conv.ConvertString(req.HTML)
 	if err != nil {
 		return nil, fmt.Errorf("HTML转换失败: %w", err)
 	}
@@ -71,7 +51,6 @@ func (c *Converter) Convert(req *model.ConvertRequest) (*model.ConvertResponse, 
 		InputSize:      len(req.HTML),
 		OutputSize:     len(markdown),
 		ProcessingTime: processingTime,
-		PluginsUsed:    req.Plugins,
 	}
 
 	response := &model.ConvertResponse{
@@ -124,23 +103,6 @@ func (c *Converter) ConvertBatch(req *model.BatchConvertRequest) (*model.BatchCo
 		Results: results,
 		Summary: summary,
 	}, nil
-}
-
-// configurePlugins 配置插件
-func (c *Converter) configurePlugins(plugins []string) ([]converter.Plugin, error) {
-	var result []converter.Plugin
-
-	for _, plugin := range plugins {
-		switch strings.ToLower(plugin) {
-		case "commonmark", "base":
-			// 已经默认加载，跳过
-			continue
-		default:
-			return nil, fmt.Errorf("不支持的插件: %s", plugin)
-		}
-	}
-
-	return result, nil
 }
 
 // GetSupportedPlugins 获取支持的插件列表

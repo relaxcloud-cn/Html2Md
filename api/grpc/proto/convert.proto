@@ -25,8 +25,6 @@ service ConvertService {
 // 转换请求
 message ConvertRequest {
   string html = 1;                          // HTML内容
-  repeated string plugins = 2;              // 启用的插件
-  string domain = 3;                        // 基础域名
 }
 
 // 转换响应
@@ -40,7 +38,6 @@ message ConversionStats {
   int32 input_size = 1;                     // 输入HTML大小（字节）
   int32 output_size = 2;                    // 输出Markdown大小（字节）
   google.protobuf.Duration processing_time = 3; // 处理时间
-  repeated string plugins_used = 4;         // 使用的插件列表
 }
 
 // 批量转换请求

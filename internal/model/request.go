@@ -2,9 +2,7 @@ package model
 
 // ConvertRequest HTML转Markdown请求参数
 type ConvertRequest struct {
-	HTML    string   `json:"html" binding:"required" example:"<h1>Hello World</h1>"` // HTML内容
-	Plugins []string `json:"plugins,omitempty" example:"base,commonmark"`            // 启用的插件
-	Domain  string   `json:"domain,omitempty" example:"https://example.com"`         // 基础域名，用于转换相对链接
+	HTML string `json:"html" binding:"required" example:"<h1>Hello World</h1>"` // HTML内容
 }
 
 // HealthRequest 健康检查请求
